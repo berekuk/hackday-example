@@ -5,12 +5,27 @@
 </head>
 <body>
 <table>
-[% FOREACH i IN xml.channel.item %]
 <tr>
+[% FOREACH r IN rss.keys %]
     <td>
-        <a href="[% i.link %]">[% i.title %]</a>
+    <table>
+    <tr><th>
+    [% SWITCH r %]
+        [% CASE 'hackday' %]
+            Записи про HackDay
+        [% CASE 'hackday_popular' %]
+            Самые популярные записи про HackDay
+    [% END %]
+    </tr></th>
+    [% FOREACH i IN rss.item(r).channel.item %]
+    <tr>
+        <td>
+            <a href="[% i.link %]">[% i.title %]</a>
+        </td>
+    </tr>
+    [% END %]
+    </table>
     </td>
-</tr>
 [% END %]
 </table>
 </body>
