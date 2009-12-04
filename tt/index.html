@@ -15,6 +15,8 @@
             Записи про HackDay
         [% CASE 'hackday_popular' %]
             Самые популярные записи про HackDay
+        [% CASE 'popular' %]
+            Все популярные записи
     [% END %]
     </tr></th>
     [% FOREACH i IN rss.item(r).channel.item %]

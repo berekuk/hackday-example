@@ -16,6 +16,6 @@ print $cgi->header(-content => 'text/html');
 
 my $xml = retrieve('/var/www/hackday/data/xml');
 
-my $template = Template->new(INCLUDE_PATH => '/var/www/hackday/tt');
+my $template = Template->new(INCLUDE_PATH => '/var/www/hackday/tt', ENCODING => 'utf8');
 $template->process('index.html', { rss => $xml }) or die $template->error;
 
