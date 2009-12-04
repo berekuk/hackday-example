@@ -7,19 +7,15 @@ use warnings;
 
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
-use LWP::Simple;
-use XML::Simple;
+use Storable qw(retrieve);
 use Template;
 
 my $cgi = CGI->new();
 $cgi->charset('utf-8');
 print $cgi->header(-content => 'text/html');
 
-my %xml;
-
-$xml{hackday} = XMLin(get('http://blogs.yandex.ru/search.rss?text=hackday'));
-$xml{hackday_popular} = XMLin(get('http://blogs.yandex.ru/search.rss?text=hackday&how=relev'));
+my $xml = retrieve('/var/www/hackday/data/xml');
 
 my $template = Template->new(INCLUDE_PATH => '/var/www/hackday/tt');
-$template->process('index.html', { rss => \%xml }) or die $template->error;
+$template->process('index.html', { rss => $xml }) or die $template->error;
 
