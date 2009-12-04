@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+# vim: ft=perl
+# Copyright (c) 2009 Yandex.ru
+
+use strict;
+use warnings;
+
+use CGI;
+use CGI::Carp qw(fatalsToBrowser);
+use LWP::Simple;
+use XML::Simple;
+use Template;
+
+my $cgi = CGI->new();
+$cgi->charset('utf-8');
+print $cgi->header(-content => 'text/html');
+
+my $hackday_rss = get('http://blogs.yandex.ru/search.rss?text=hackday');
+my $hackday_xml = XMLin($hackday_rss);
+
+my $template = Template->new(INCLUDE_PATH => '/var/www/hackday/tt');
+$template->process('index.html', { xml => $hackday_xml }) or die $template->error;
+

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hackday - мастер-класс</title>
+</head>
+<body>
+<table>
+[% FOREACH i IN xml.channel.item %]
+<tr>
+    <td>
+        <a href="[% i.link %]">[% i.title %]</a>
+    </td>
+</tr>
+[% END %]
+</table>
+</body>
+</html>
+
