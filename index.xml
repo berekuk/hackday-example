@@ -7,9 +7,10 @@ use warnings;
 
 use CGI;
 use CGI::Carp qw(fatalsToBrowser);
-use Storable qw(retrieve);
+use Storable qw(retrieve store);
 use Template;
 use Encode;
+use Digest::MD5 qw(md5_hex);
 
 use lib '.';
 use Util;
@@ -18,13 +19,25 @@ my $cgi = CGI->new();
 $cgi->charset('utf-8');
 print $cgi->header(-content => 'text/html');
 
-my $xml = retrieve('/var/www/hackday/data/xml');
+my $data_dir = '/var/www/hackday/data';
+my $xml = retrieve("$data_dir/xml");
 
 my $text = $cgi->param('text');
 if ($text) {
-    $xml->{rss} = rss($text);
-    $xml->{rss_popular} = rss($text, { how => 'relev' });
-    $text = decode_utf8($text);
+    my $file = "$data_dir/".md5_hex($text);
+    if (-e $file and time - (stat($file))[9] < 3600) {
+        # load from cache
+        my $cache = retrieve($file);
+        $xml->{rss} = $cache->{rss};
+        $xml->{rss_popular} = $cache->{rss_popular};
+        $text = $cache->{text};
+    }
+    else {
+        $xml->{rss} = rss($text);
+        $xml->{rss_popular} = rss($text, { how => 'relev' });
+        $text = decode_utf8($text);
+        store({ 'text' => $text, rss => $xml->{rss}, rss_popular => $xml->{rss_popular} } => $file);
+    }
 }
 $text ||= 'hackday';
 
