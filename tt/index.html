@@ -11,10 +11,10 @@
     <table>
     <tr><th>
     [% SWITCH r %]
-        [% CASE 'hackday' %]
-            Записи про HackDay
-        [% CASE 'hackday_popular' %]
-            Самые популярные записи про HackDay
+        [% CASE 'rss' %]
+            Записи про [% text %]
+        [% CASE 'rss_popular' %]
+            Самые популярные записи про [% text %]
         [% CASE 'popular' %]
             Все популярные записи
     [% END %]
@@ -48,6 +48,10 @@
     </td>
 [% END %]
 </table>
+<br/>
+<br/>
+<hr/>
+<span style="font-size: 0.8em">© <a href="http://mmcleric.moikrug.ru">Вячеслав Матюхин</a>, <a href="http://anton.moikrug.ru">Антон Волнухин</a>, специально для <a href="http://spb.hackday.ru">#spbhackday</a></span>
 </body>
 </html>
 
