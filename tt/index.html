@@ -5,7 +5,7 @@
 </head>
 <body>
 <table>
-<tr>
+<tr style="vertical-align: top">
 [% FOREACH r IN rss.keys %]
     <td>
     <table>
@@ -22,7 +22,25 @@
     [% FOREACH i IN rss.item(r).channel.item %]
     <tr>
         <td>
-            <a href="[% i.link %]">[% i.title %]</a>
+            <a href="[% i.link %]">[% i.title || "<i>(Нет заголовка)</i>" %]</a><br/>
+            <span style="font-size: 0.8em">
+                <span style="color: green">[% i.nick %]</span> –
+                [% i.date.day %]
+                [% SWITCH i.date.month %]
+                    [% CASE 'Jan' %]января
+                    [% CASE 'Feb' %]февраля
+                    [% CASE 'Mar' %]матра
+                    [% CASE 'Apr' %]апреля
+                    [% CASE 'May' %]мая
+                    [% CASE 'Jun' %]июня
+                    [% CASE 'Jul' %]июля
+                    [% CASE 'Aug' %]августа
+                    [% CASE 'Sep' %]сентября
+                    [% CASE 'Oct' %]октября
+                    [% CASE 'Nov' %]ноября
+                    [% CASE 'Dec' %]декабря
+                [% END %] [% i.date.time %]
+            </span>
         </td>
     </tr>
     [% END %]

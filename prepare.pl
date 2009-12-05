@@ -8,6 +8,8 @@ use LWP::Simple;
 use XML::LibXML::Simple;
 use Storable qw(store);
 use List::Util qw(max);
+use URI;
+use Date::Manip;
 
 my %xml;
 
@@ -39,7 +41,6 @@ sub rating {
     my $l = $item->{'yablogs:links24'} || 1;
     my $v = $item->{'yablogs:visits24'} || 1;
     my $rating = 2 / ( 1 / max(5 * $l, $c) + ( 1 / $v)); # harmonic_mean(max(links,comments),visits)
-    warn "rating: $rating\n";
     return $rating;
 }
 
@@ -47,6 +48,37 @@ my @items = @{ $rating_xml->{channel}{item} };
 @items = sort { rating($b) <=> rating($a) } @items;
 $rating_xml->{channel}{item} = [ @items[0..9] ];
 $xml{popular} = $rating_xml;
+
+for my $xml (values %xml) {
+    for my $item (@{ $xml->{channel}{item} }) {
+        my $author = $item->{author};
+        if ($item->{link}) {
+            if ($item->{link} =~ m{(http://users\.livejournal\.com/[^/]+)}) {
+                $author = $1;
+            }
+            elsif ($item->{link} =~ m{(http://[^.]+\.livejournal\.com)}) {
+                $author = "$1/";
+            }
+        }
+        next unless defined $author;
+        my $url = URI->new("http://blogs.yandex.ru/search_profiles_atom.xml");
+        $url->query_form({ text => qq{journal="$author"} });
+        my $foaf = XMLin(get($url));
+        my $entry = $foaf->{entry};
+        if ($entry) {
+            $entry = $entry->[0] if ref($entry) eq 'ARRAY';
+            if (my $nick = $entry->{title}) {
+                $item->{nick} = $nick;
+            }
+        }
+        $item->{nick} ||= $author;
+
+        my $date = ParseDate($item->{pubDate});
+        $item->{date}{time} = UnixDate($date, '%i:%M');
+        $item->{date}{day} = UnixDate($date, '%e');
+        $item->{date}{month} = UnixDate($date, '%b');
+    }
+}
 
 store(\%xml => '/var/www/hackday/data/xml');
 
