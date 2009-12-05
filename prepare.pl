@@ -14,8 +14,8 @@ use Util;
 
 my %xml;
 
-$xml{rss} = rss('hackday');
-$xml{rss_popular} = rss('hackday', { how => 'relev' });
+$xml{rss} = rss('hackday || spbhackday');
+$xml{rss_popular} = rss('hackday || spbhackday', { how => 'relev' });
 
 my $p = 0;
 my $rating_xml;
